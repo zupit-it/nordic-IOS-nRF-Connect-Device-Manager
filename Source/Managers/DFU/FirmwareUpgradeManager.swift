@@ -9,7 +9,7 @@ import CoreBluetooth
 
 // MARK: - FirmwareUpgradeManager
 
-open class FirmwareUpgradeManager: FirmwareUpgradeController, ConnectionObserver {
+open class FirmwareUpgradeManager: NSObject,FirmwareUpgradeController, ConnectionObserver {
     
     private let imageManager: ImageManager
     private let defaultManager: DefaultManager
