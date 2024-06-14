@@ -9,7 +9,7 @@ import CoreBluetooth
 
 // MARK: - PeripheralState
 
-public enum PeripheralState {
+@objc public enum PeripheralState: UInt8 {
     /// State set when the manager starts connecting with the
     /// peripheral.
     case connecting
@@ -27,14 +27,14 @@ public enum PeripheralState {
 
 // MARK: - PeripheralDelegate
 
-public protocol PeripheralDelegate: AnyObject {
+@objc public protocol PeripheralDelegate: AnyObject {
     /// Callback called whenever peripheral state changes.
-    func peripheral(_ peripheral: CBPeripheral, didChangeStateTo state: PeripheralState)
+    @objc func peripheral(_ peripheral: CBPeripheral, didChangeStateTo state: PeripheralState)
 }
 
 // MARK: - McuMgrBleTransport
 
-public class McuMgrBleTransport: NSObject {
+@objc public class McuMgrBleTransport: NSObject {
     
     /// The CBPeripheral for this transport to communicate with.
     internal var peripheral: CBPeripheral?
@@ -74,7 +74,7 @@ public class McuMgrBleTransport: NSObject {
     /// An array of observers.
     private var observers: [ConnectionObserver]
     /// BLE transport delegate.
-    public weak var delegate: PeripheralDelegate? {
+    @objc public weak var delegate: PeripheralDelegate? {
         didSet {
             DispatchQueue.main.async {
                 self.notifyPeripheralDelegate()
@@ -128,7 +128,7 @@ public class McuMgrBleTransport: NSObject {
     ///
     /// - parameter target: The BLE peripheral with Simple Management
     ///   Protocol (SMP) service.
-    public convenience init(_ target: CBPeripheral) {
+    @objc public convenience init(_ target: CBPeripheral) {
         self.init(target.identifier)
     }
 
