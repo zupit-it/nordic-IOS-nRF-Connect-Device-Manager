@@ -8,16 +8,16 @@ import Foundation
 
 // MARK: - McuMgrImage
 
-public class McuMgrImage {
+@objc public class McuMgrImage: NSObject {
     
     public static let IMG_HASH_LEN = 32
     
     public let header: McuMgrImageHeader
     public let tlv: McuMgrImageTlv
-    public let data: Data
-    public let hash: Data
+    @objc public let data: Data
+    @objc public let imageHash: Data
     
-    public init(data: Data) throws {
+    @objc public init(data: Data) throws {
         self.data = data
         let header = try McuMgrImageHeader(data: data)
         self.header = header
@@ -27,8 +27,8 @@ public class McuMgrImage {
             tlv = try McuMgrImageTlv(data: data, imageHeader: header, at: offset + Int(info.total))
         }
         self.tlv = tlv
-        if let hash = tlv.hash {
-            self.hash = hash
+        if let hash = tlv.imageHash {
+            self.imageHash = hash
         } else {
             throw McuMgrImageParseError.hashNotFound
         }
@@ -116,7 +116,7 @@ public struct McuMgrImageTlv {
     
     public var tlvInfo: McuMgrImageTlvInfo?
     public var trailerTlvEntries: [McuMgrImageTlvTrailerEntry]
-    public var hash: Data?
+    public var imageHash: Data?
     
     public init(data: Data, imageHeader: McuMgrImageHeader, at offset: Int) throws {
         var localOffset = offset
@@ -147,7 +147,7 @@ public struct McuMgrImageTlv {
             localOffset += tlvEntry.size
         }
         
-        hash = hashEntry?.value
+        imageHash = hashEntry?.value
     }
 }
 

@@ -8,20 +8,20 @@
 
 import Foundation
 
-public protocol FirmwareUpgradeController {
+@objc public protocol FirmwareUpgradeController {
     
     /// Pause the firmware upgrade.
-    func pause()
+    @objc func pause()
     
     /// Resume a paused firmware upgrade.
-    func resume()
+    @objc func resume()
     
     /// Cancel the firmware upgrade.
-    func cancel()
+    @objc func cancel()
     
     /// Returns true if the upload has been paused.
-    func isPaused() -> Bool
+    @objc func isPaused() -> Bool
     
     /// Returns true if the upload is in progress.
-    func isInProgress() -> Bool
+    @objc func isInProgress() -> Bool
 }

@@ -9,7 +9,7 @@ import CoreBluetooth
 
 // MARK: - FirmwareUpgradeManager
 
-public class FirmwareUpgradeManager: FirmwareUpgradeController, ConnectionObserver {
+@objc public class FirmwareUpgradeManager: FirmwareUpgradeController, ConnectionObserver {
     
     private let imageManager: ImageManager
     private let defaultManager: DefaultManager
@@ -44,7 +44,16 @@ public class FirmwareUpgradeManager: FirmwareUpgradeController, ConnectionObserv
     //**************************************************************************
     // MARK: Initializer
     //**************************************************************************
-    
+  
+    @objc public init(transporter: McuMgrBleTransport, delegate: FirmwareUpgradeDelegate?) {
+        self.imageManager = ImageManager(transporter: transporter)
+        self.defaultManager = DefaultManager(transporter: transporter)
+        self.basicManager = BasicManager(transporter: transporter)
+        self.delegate = delegate
+        self.state = .none
+        self.paused = false
+    }
+
     public init(transporter: McuMgrTransport, delegate: FirmwareUpgradeDelegate?) {
         self.imageManager = ImageManager(transporter: transporter)
         self.defaultManager = DefaultManager(transporter: transporter)
@@ -213,7 +222,7 @@ public class FirmwareUpgradeManager: FirmwareUpgradeController, ConnectionObserv
                 return
             }
             for image in imagesToUpload {
-                let hash = (try? McuMgrImage(data: image.data).hash)
+                let hash = (try? McuMgrImage(data: image.data).imageHash)
                 let hashString = hash?.hexEncodedString(options: [.prepend0x, .upperCase]) ?? "Unknown"
                 log(msg: "Scheduling upload (hash: \(hashString)) for image \(image.image) (slot: \(image.slot))", atLevel: .application)
             }
@@ -1123,7 +1132,7 @@ extension FirmwareUpgradeError: LocalizedError {
 // MARK: - FirmwareUpgradeState
 //******************************************************************************
 
-public enum FirmwareUpgradeState {
+@objc public enum FirmwareUpgradeState: UInt8 {
     case none
     case requestMcuMgrParameters, bootloaderInfo, eraseAppSettings
     case upload, success
@@ -1192,34 +1201,34 @@ public enum FirmwareUpgradeMode: Codable, CustomDebugStringConvertible, CaseIter
 //******************************************************************************
 
 /// Callbacks for firmware upgrades started using FirmwareUpgradeManager.
-public protocol FirmwareUpgradeDelegate: AnyObject {
+@objc public protocol FirmwareUpgradeDelegate: AnyObject {
     
     /// Called when the upgrade has started.
     ///
     /// - parameter controller: The controller that may be used to pause,
     ///   resume or cancel the upgrade.
-    func upgradeDidStart(controller: FirmwareUpgradeController)
+    @objc func upgradeDidStart(controller: FirmwareUpgradeController)
     
     /// Called when the firmware upgrade state has changed.
     ///
     /// - parameter previousState: The state before the change.
     /// - parameter newState: The new state.
-    func upgradeStateDidChange(from previousState: FirmwareUpgradeState, to newState: FirmwareUpgradeState)
+    @objc func upgradeStateDidChange(from previousState: FirmwareUpgradeState, to newState: FirmwareUpgradeState)
     
     /// Called when the firmware upgrade has succeeded.
-    func upgradeDidComplete()
+    f@objc unc upgradeDidComplete()
     
     /// Called when the firmware upgrade has failed.
     ///
     /// - parameter state: The state in which the upgrade has failed.
     /// - parameter error: The error.
-    func upgradeDidFail(inState state: FirmwareUpgradeState, with error: Error)
+    @objc func upgradeDidFail(inState state: FirmwareUpgradeState, with error: Error)
     
     /// Called when the firmware upgrade has been cancelled using cancel()
     /// method. The upgrade may be cancelled only during uploading the image.
     /// When the image is uploaded, the test and/or confirm commands will be
     /// sent depending on the mode.
-    func upgradeDidCancel(state: FirmwareUpgradeState)
+    @objc func upgradeDidCancel(state: FirmwareUpgradeState)
     
     /// Called when the upload progress has changed.
     ///
@@ -1227,7 +1236,7 @@ public protocol FirmwareUpgradeDelegate: AnyObject {
     /// - parameter imageSize: Total number of bytes to be sent.
     /// - parameter timestamp: The time that the successful response packet for
     ///   the progress was received.
-    func uploadProgressDidChange(bytesSent: Int, imageSize: Int, timestamp: Date)
+    @objc func uploadProgressDidChange(bytesSent: Int, imageSize: Int, timestamp: Date)
 }
 
 // MARK: - FirmwareUpgradeImage
