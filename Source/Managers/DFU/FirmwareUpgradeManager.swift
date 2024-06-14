@@ -9,7 +9,7 @@ import CoreBluetooth
 
 // MARK: - FirmwareUpgradeManager
 
-open class FirmwareUpgradeManager: FirmwareUpgradeController, ConnectionObserver {
+open class FirmwareUpgradeManager: NSObject,FirmwareUpgradeController, ConnectionObserver {
     
     // MARK: Private Properties
     
