@@ -9,7 +9,7 @@ import CoreBluetooth
 
 // MARK: - FirmwareUpgradeManager
 
-@objc public class FirmwareUpgradeManager: FirmwareUpgradeController, ConnectionObserver {
+open class FirmwareUpgradeManager: FirmwareUpgradeController, ConnectionObserver {
     
     // MARK: Private Properties
     
@@ -46,10 +46,12 @@ import CoreBluetooth
     // MARK: Initializer
     //**************************************************************************
   
-    @objc public init(transporter: McuMgrBleTransport, delegate: FirmwareUpgradeDelegate?) {
+    public init(transporter: McuMgrBleTransport, delegate: FirmwareUpgradeDelegate?) {
         self.imageManager = ImageManager(transporter: transporter)
         self.defaultManager = DefaultManager(transporter: transporter)
         self.basicManager = BasicManager(transporter: transporter)
+        self.suitManager = SuitManager(transporter: transporter)
+        self.suitManifestManager = SuitManifestManager(transporter: transporter)
         self.delegate = delegate
         self.state = .none
         self.paused = false
