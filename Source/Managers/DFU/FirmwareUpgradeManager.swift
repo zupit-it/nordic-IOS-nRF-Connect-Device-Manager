@@ -9,7 +9,7 @@ import CoreBluetooth
 
 // MARK: - FirmwareUpgradeManager
 
-@objc public class FirmwareUpgradeManager: FirmwareUpgradeController, ConnectionObserver {
+open class FirmwareUpgradeManager: FirmwareUpgradeController, ConnectionObserver {
     
     private let imageManager: ImageManager
     private let defaultManager: DefaultManager
@@ -45,10 +45,12 @@ import CoreBluetooth
     // MARK: Initializer
     //**************************************************************************
   
-    @objc public init(transporter: McuMgrBleTransport, delegate: FirmwareUpgradeDelegate?) {
+    public init(transporter: McuMgrBleTransport, delegate: FirmwareUpgradeDelegate?) {
         self.imageManager = ImageManager(transporter: transporter)
         self.defaultManager = DefaultManager(transporter: transporter)
         self.basicManager = BasicManager(transporter: transporter)
+        self.suitManager = SuitManager(transporter: transporter)
+        self.suitManifestManager = SuitManifestManager(transporter: transporter)
         self.delegate = delegate
         self.state = .none
         self.paused = false
@@ -1216,7 +1218,7 @@ public enum FirmwareUpgradeMode: Codable, CustomDebugStringConvertible, CaseIter
     @objc func upgradeStateDidChange(from previousState: FirmwareUpgradeState, to newState: FirmwareUpgradeState)
     
     /// Called when the firmware upgrade has succeeded.
-    f@objc unc upgradeDidComplete()
+    @objc func upgradeDidComplete()
     
     /// Called when the firmware upgrade has failed.
     ///
