@@ -46,7 +46,7 @@ open class FirmwareUpgradeManager: NSObject,FirmwareUpgradeController, Connectio
     // MARK: Initializer
     //**************************************************************************
   
-    public init(transporter: McuMgrBleTransport, delegate: FirmwareUpgradeDelegate?) {
+    @objc public init(transporter: McuMgrBleTransport, delegate: FirmwareUpgradeDelegate?) {
         self.imageManager = ImageManager(transporter: transporter)
         self.defaultManager = DefaultManager(transporter: transporter)
         self.basicManager = BasicManager(transporter: transporter)
@@ -87,6 +87,11 @@ open class FirmwareUpgradeManager: NSObject,FirmwareUpgradeController, Connectio
         // Erase App Settings is not supported by SUIT Bootloader.
         suitConfiguration.eraseAppSettings = false
         try start(images: package.images, using: suitConfiguration)
+    }
+    
+    @objc public func start(hash: Data, data: Data) throws {
+        try start(images: [ImageManager.Image(image: 0, hash: hash, data: data)],
+                  using: FirmwareUpgradeConfiguration())
     }
     
     /// Start the firmware upgrade.
