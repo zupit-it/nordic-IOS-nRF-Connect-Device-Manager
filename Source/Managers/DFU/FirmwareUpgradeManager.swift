@@ -31,7 +31,7 @@ open class FirmwareUpgradeManager: NSObject,FirmwareUpgradeController, Connectio
     private var paused: Bool
     
     /// Logger delegate may be used to obtain logs.
-    public weak var logDelegate: McuMgrLogDelegate? {
+    @objc public weak var logDelegate: McuMgrLogDelegate? {
         didSet {
             imageManager.logDelegate = logDelegate
             defaultManager.logDelegate = logDelegate
@@ -73,7 +73,14 @@ open class FirmwareUpgradeManager: NSObject,FirmwareUpgradeController, Connectio
     
     @objc public func start(hash: Data, data: Data) throws {
         try start(images: [ImageManager.Image(image: 0, hash: hash, data: data)],
-                  using: FirmwareUpgradeConfiguration())
+                  using:  FirmwareUpgradeConfiguration(
+                    estimatedSwapTime: 10.0, 
+                    eraseAppSettings: true,
+                    pipelineDepth: 3,
+                    byteAlignment: .fourByte,
+                    upgradeMode: .confirmOnly,
+                    bootloaderMode: .unknown,
+                    suitMode: false))
     }
     
     /// Start the firmware upgrade.
