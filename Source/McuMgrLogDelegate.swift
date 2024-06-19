@@ -19,7 +19,7 @@ import Foundation
 /// - Application - Messages about application level events, in human-readable form.
 /// - Warning     - Important messages.
 /// - Error       - Highest priority messages with errors.
-public enum McuMgrLogLevel: Int {
+@objc public enum McuMgrLogLevel: Int {
     case debug       = 0
     case verbose     = 1
     case info        = 5
@@ -50,25 +50,92 @@ extension McuMgrLogLevel: Comparable {
 // MARK: - McuMgrLogCategory
 
 /// The log category indicates the component that created the log entry.
-public enum McuMgrLogCategory: String {
-    case transport         = "Transport"
-    case settings          = "SettingsManager"
-    case crash             = "CrashManager"
-    case `default`         = "DefaultManager"
-    case filesystemManager = "FileSystemManager"
-    case image             = "ImageManager"
-    case log               = "LogManager"
-    case runTest           = "RunTestManager"
-    case stats             = "StatsManager"
-    case dfu               = "DFU"
-    case basic             = "BasicManager"
-    case shell             = "ShellManager"
-    case suit              = "SuitManager"
+@objc public enum McuMgrLogCategory: Int, RawRepresentable {
+    case transport         // = "Transport"
+    case settings          // = "SettingsManager"
+    case crash             // = "CrashManager"
+    case `default`         // = "DefaultManager"
+    case filesystemManager // = "FileSystemManager"
+    case image             // = "ImageManager"
+    case log               // = "LogManager"
+    case runTest           // = "RunTestManager"
+    case stats             // = "StatsManager"
+    case dfu               // = "DFU"
+    case basic             // = "BasicManager"
+    case shell             // = "ShellManager"
+    case suit              // = "SuitManager"
+    
+    public typealias RawValue = String
+
+    public var rawValue: RawValue {
+        switch self {
+            case .transport:
+                return "Transport"
+            case .settings:
+                return "SettingsManager"
+            case .crash:
+                return "CrashManager"
+            case .`default`:
+                return "DefaultManager"
+            case .filesystemManager:
+                return "FileSystemManager"
+            case .image:
+                return "ImageManager"
+            case .log:
+                return "LogManager"
+            case .runTest:
+                return "RunTestManager"
+            case .stats:
+                return "StatsManager"
+            case .dfu:
+                return "DFU"
+            case .basic:
+                return "BasicManager"
+            case .shell:
+                return "ShellManager"
+            case .suit:
+                return "SuitManager"
+        }
+    }
+
+    public init?(rawValue: RawValue) {
+        switch rawValue {
+            case "Transport":
+                self = .transport
+            case "SettingsManager":
+                self = .settings
+            case "CrashManager":
+                self = .crash
+            case "DefaultManager":
+                self = .`default`
+            case "FileSystemManager":
+                self = .filesystemManager
+            case "ImageManager":
+                self = .image
+            case "LogManager":
+                self = .log
+            case "RunTestManager":
+                self = .runTest
+            case "StatsManager":
+                self = .stats
+            case "DFU":
+                self = .dfu
+            case "BasicManager":
+                self = .basic
+            case "ShellManager":
+                self = .shell
+            case "SuitManager":
+                self = .suit
+            default:
+                return nil
+        }
+    }
+
 }
 
 // MARK: - McuMgrLogDelegate
 
-public protocol McuMgrLogDelegate: AnyObject {
+@objc public protocol McuMgrLogDelegate: AnyObject {
     
     /// Provides the delegate with content intended to be logged.
     ///
