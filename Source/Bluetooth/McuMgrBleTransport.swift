@@ -37,7 +37,7 @@ import CoreBluetooth
 @objc public class McuMgrBleTransport: NSObject {
     
     /// The CBPeripheral for this transport to communicate with.
-    internal var peripheral: CBPeripheral?
+    public var peripheral: CBPeripheral?
     /// The CBCentralManager instance from which the peripheral was obtained.
     /// This is used to connect and cancel connection.
     internal let centralManager: CBCentralManager

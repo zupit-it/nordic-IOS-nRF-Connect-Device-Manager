@@ -130,6 +130,8 @@ open class FirmwareUpgradeManager: NSObject,FirmwareUpgradeController, Connectio
             return
         }
         
+        log(msg: "FirmwareUpgradeManager start()", atLevel: .application)
+        
         self.images = try images.map { try FirmwareUpgradeImage($0) }
         self.configuration = configuration
         self.bootloader = nil

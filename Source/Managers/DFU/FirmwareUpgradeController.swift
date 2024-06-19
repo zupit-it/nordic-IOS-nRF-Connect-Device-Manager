@@ -30,7 +30,7 @@ import Foundation
     /**
      Firmware upgrades on SUIT (Software Update for the Internet of Things) devices might request a ``FirmwareUpgradeResource`` to continue via callback. When that happens, this API allows you to provide said resource.
      */
-     @objc func func uploadResource(_ resource: FirmwareUpgradeResource, data: Data) -> Void
+     @objc func uploadResource(_ resource: FirmwareUpgradeResource, data: Data) -> Void
 }
 
 // MARK: FirmwareUpgradeResource
