@@ -6,6 +6,7 @@
 
 import UIKit
 import iOSMcuManagerLibrary
+import CoreBluetooth
 
 final class FirmwareUpgradeViewController: UIViewController, McuMgrViewController {
     
@@ -188,8 +189,8 @@ final class FirmwareUpgradeViewController: UIViewController, McuMgrViewControlle
     
     private func startFirmwareUpgrade(package: McuMgrPackage) {
         do {
-            dfuManagerConfiguration.suitMode = false
-            try dfuManager.start(images: package.images, using: dfuManagerConfiguration)
+             dfuManagerConfiguration.suitMode = false
+             try dfuManager.start(images: package.images, using: dfuManagerConfiguration)
         } catch {
             status.textColor = .systemRed
             status.text = error.localizedDescription
@@ -353,22 +354,33 @@ extension FirmwareUpgradeViewController: UIDocumentMenuDelegate, UIDocumentPicke
         self.package = nil
         self.envelope = nil
         
-        switch parseAsMcuMgrPackage(url) {
-        case .success(let package):
-            self.package = package
-        case .failure(let error):
-            if error is McuMgrPackage.Error {
-                switch parseAsSuitEnvelope(url) {
-                case .success(let envelope):
-                    self.envelope = envelope
-                case .failure(let error):
-                    onParseError(error, for: url)
-                }
-            } else {
-                onParseError(error, for: url)
-            }
+//        switch parseAsMcuMgrPackage(url) {
+//        case .success(let package):
+//            self.package = package
+//        case .failure(let error):
+//            if error is McuMgrPackage.Error {
+//                switch parseAsSuitEnvelope(url) {
+//                case .success(let envelope):
+//                    self.envelope = envelope
+//                case .failure(let error):
+//                    onParseError(error, for: url)
+//                }
+//            } else {
+//                onParseError(error, for: url)
+//            }
+//        }
+//        (parent as! ImageController).innerViewReloaded()
+        
+        do {
+            let peripheral = (self.transporter as! McuMgrBleTransport).peripheral!
+            let appLogDelegate =  UIApplication.shared.delegate as! McuMgrLogDelegate
+            let xamarinManager = McuXamarinUpgradeManager(peripheral: peripheral, firmwareUpgradeDelegare: self, logDelegate: appLogDelegate)
+            try xamarinManager.startUpgrade(url: url)
+        } catch {
+            status.textColor = .systemRed
+            status.text = error.localizedDescription
+            actionStart.isEnabled = false
         }
-        (parent as! ImageController).innerViewReloaded()
     }
     
     // MARK: - Private

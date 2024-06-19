@@ -6,17 +6,22 @@
 //
 
 import Foundation
+import CoreBluetooth
 
-@objc final class McuXamarinUpgradeManager: NSObject {
+@objc public class McuXamarinUpgradeManager: NSObject {
     
     @objc public init(peripheral: CBPeripheral, firmwareUpgradeDelegare: FirmwareUpgradeDelegate, logDelegate: McuMgrLogDelegate) {
         self.firmwareUpgradeDelegare = firmwareUpgradeDelegare
         self.logDelegate = logDelegate
         self.transporter = McuMgrBleTransport(peripheral)
+        self.dfuManager = FirmwareUpgradeManager(transporter: transporter, delegate: self.firmwareUpgradeDelegare)
+        self.dfuManager.logDelegate = logDelegate
+        self.logDelegate.log(String("McuXamarinUpgradeManager init() completed"), ofCategory: .basic, atLevel: .application)
     }
     
     private var firmwareUpgradeDelegare: FirmwareUpgradeDelegate
     private var logDelegate: McuMgrLogDelegate
+    private var transporter: McuMgrBleTransport!
     private var package: McuMgrPackage?
     private var envelope: McuMgrSuitEnvelope?
     private var dfuManager: FirmwareUpgradeManager!
@@ -24,15 +29,11 @@ import Foundation
     private var dfuManagerConfiguration = FirmwareUpgradeConfiguration(
         estimatedSwapTime: 10.0, eraseAppSettings: false, pipelineDepth: 3, byteAlignment: .fourByte)
     
-    var transporter: McuMgrBleTransport! {
-        didSet {
-            dfuManager = FirmwareUpgradeManager(transporter: transporter, delegate: self.firmwareUpgradeDelegare)
-            dfuManager.logDelegate = self.logDelegate
-        }
-    }
     
-    @objc public func startUpgradeFromUrl(url: URL) {
-        self.loadImageFileFromUrl(url: URL)
+    @objc public func startUpgrade(url: URL) throws {
+        self.logDelegate.log(String("McuXamarinUpgradeManager startUpgrade()"), ofCategory: .basic, atLevel: .application)
+        self.loadImageFileFromUrl(url: url)
+        self.logDelegate.log(String("McuXamarinUpgradeManager loadImageFileFromUrl() completed"), ofCategory: .basic, atLevel: .application)
         self.start()
     }
     
@@ -40,22 +41,15 @@ import Foundation
         self.package = nil
         self.envelope = nil
         
+        let message = String("Reading file: " + url.absoluteString)
+        self.logDelegate.log(message, ofCategory: .basic, atLevel: .application)
+        
         switch parseAsMcuMgrPackage(url) {
         case .success(let package):
             self.package = package
         case .failure(let error):
-            if error is McuMgrPackage.Error {
-                switch parseAsSuitEnvelope(url) {
-                case .success(let envelope):
-                    self.envelope = envelope
-                case .failure(let error):
-                    onParseError(error, for: url)
-                }
-            } else {
-                onParseError(error, for: url)
-            }
+            onParseError(error, for: url)
         }
-        (parent as! ImageController).innerViewReloaded()
     }
     
     
@@ -77,9 +71,7 @@ import Foundation
             dfuManagerConfiguration.suitMode = false
             try dfuManager.start(images: package.images, using: dfuManagerConfiguration)
         } catch {
-//            status.textColor = .systemRed
-//            status.text = error.localizedDescription
-//            actionStart.isEnabled = false
+            self.logDelegate.log(String("startFirmwareUpgrade(package) error()"), ofCategory: .basic, atLevel: .error)
         }
     }
     
@@ -95,9 +87,7 @@ import Foundation
             dfuManagerConfiguration.upgradeMode = .uploadOnly
             try dfuManager.start(hash: sha256Hash, data: envelope.data, using: dfuManagerConfiguration)
         } catch {
-//            status.textColor = .systemRed
-//            status.text = error.localizedDescription
-//            actionStart.isEnabled = false
+            self.logDelegate.log(String("startFirmwareUpgrade(envelope) error()"), ofCategory: .basic, atLevel: .error)
         }
     }
     
@@ -114,18 +104,21 @@ import Foundation
         }
     }
     
-    func parseAsSuitEnvelope(_ url: URL) -> Result<McuMgrSuitEnvelope, Error> {
-        do {
-            let envelope = try McuMgrSuitEnvelope(from: url)
-            return .success(envelope)
-        } catch {
-            return .failure(error)
-        }
-    }
+//    func parseAsSuitEnvelope(_ url: URL) -> Result<McuMgrSuitEnvelope, Error> {
+//        do {
+//            let envelope = try McuMgrSuitEnvelope(from: url)
+//            return .success(envelope)
+//        } catch {
+//            return .failure(error)
+//        }
+//    }
     
     func onParseError(_ error: Error, for url: URL) {
         self.package = nil
         self.envelope = nil
+        let message = String("Error reading file: " + url.absoluteString)
+        self.logDelegate.log(message, ofCategory: .basic, atLevel: .error)
+        self.firmwareUpgradeDelegare.upgradeDidFail(inState: .none, with: error)
     }
 }
 

@@ -98,7 +98,7 @@ fileprivate extension McuMgrPackage {
     
     static func extractImageFromBinFile(from url: URL) throws -> [ImageManager.Image] {
         let binData = try Data(contentsOf: url)
-        let binHash = try McuMgrImage(data: binData).hash
+        let binHash = try McuMgrImage(data: binData).imageHash
         return [ImageManager.Image(image: 0, hash: binHash, data: binData)]
     }
     
