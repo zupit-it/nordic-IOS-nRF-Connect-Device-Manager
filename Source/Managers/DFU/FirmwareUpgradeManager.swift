@@ -46,23 +46,23 @@ open class FirmwareUpgradeManager: NSObject,FirmwareUpgradeController, Connectio
     // MARK: Initializer
     //**************************************************************************
   
-    @objc public init(transporter: McuMgrBleTransport, delegate: FirmwareUpgradeDelegate?) {
-        self.imageManager = ImageManager(transporter: transporter)
-        self.defaultManager = DefaultManager(transporter: transporter)
-        self.basicManager = BasicManager(transporter: transporter)
-        self.suitManager = SuitManager(transporter: transporter)
-        self.suitManifestManager = SuitManifestManager(transporter: transporter)
+    @objc public init(transport: McuMgrBleTransport, delegate: FirmwareUpgradeDelegate?) {
+        self.imageManager = ImageManager(transport: transport)
+        self.defaultManager = DefaultManager(transport: transport)
+        self.basicManager = BasicManager(transport: transport)
+        self.suitManager = SuitManager(transport: transport)
+        // self.suitManifestManager = SuitManifestManager(transporter: transporter)
         self.delegate = delegate
         self.state = .none
         self.paused = false
     }
 
-    public init(transporter: McuMgrTransport, delegate: FirmwareUpgradeDelegate?) {
-        self.imageManager = ImageManager(transporter: transporter)
-        self.defaultManager = DefaultManager(transporter: transporter)
-        self.basicManager = BasicManager(transporter: transporter)
-        self.suitManager = SuitManager(transporter: transporter)
-        self.suitManifestManager = SuitManifestManager(transporter: transporter)
+    public init(transport: McuMgrTransport, delegate: FirmwareUpgradeDelegate?) {
+        self.imageManager = ImageManager(transport: transport)
+        self.defaultManager = DefaultManager(transport: transport)
+        self.basicManager = BasicManager(transport: transport)
+        self.suitManager = SuitManager(transport: transport)
+        // self.suitManifestManager = SuitManifestManager(transporter: transporter)
         self.delegate = delegate
         self.state = .none
         self.paused = false
@@ -97,8 +97,7 @@ open class FirmwareUpgradeManager: NSObject,FirmwareUpgradeController, Connectio
                     pipelineDepth: 3,
                     byteAlignment: .fourByte,
                     upgradeMode: .confirmOnly,
-                    bootloaderMode: .unknown,
-                    suitMode: false))
+                    bootloaderMode: .unknown))
     }
     
     /// Start the firmware upgrade.

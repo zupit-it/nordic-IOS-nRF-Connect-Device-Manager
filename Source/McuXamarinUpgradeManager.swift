@@ -14,7 +14,7 @@ import CoreBluetooth
         self.firmwareUpgradeDelegare = firmwareUpgradeDelegare
         self.logDelegate = logDelegate
         self.transporter = McuMgrBleTransport(peripheral)
-        self.dfuManager = FirmwareUpgradeManager(transporter: transporter, delegate: self.firmwareUpgradeDelegare)
+        self.dfuManager = FirmwareUpgradeManager(transport: transporter, delegate: self.firmwareUpgradeDelegare)
         self.dfuManager.logDelegate = logDelegate
         self.logDelegate.log(String("McuXamarinUpgradeManager init() completed"), ofCategory: .basic, atLevel: .application)
     }
@@ -68,7 +68,7 @@ import CoreBluetooth
     
     private func startFirmwareUpgrade(package: McuMgrPackage) {
         do {
-            dfuManagerConfiguration.suitMode = false
+            // dfuManagerConfiguration.suitMode = false
             try dfuManager.start(images: package.images, using: dfuManagerConfiguration)
         } catch {
             self.logDelegate.log(String("startFirmwareUpgrade(package) error()"), ofCategory: .basic, atLevel: .error)
@@ -83,7 +83,7 @@ import CoreBluetooth
                 throw McuMgrSuitParseError.supportedAlgorithmNotFound
             }
             
-            dfuManagerConfiguration.suitMode = true
+            // dfuManagerConfiguration.suitMode = true
             dfuManagerConfiguration.upgradeMode = .uploadOnly
             try dfuManager.start(hash: sha256Hash, data: envelope.data, using: dfuManagerConfiguration)
         } catch {

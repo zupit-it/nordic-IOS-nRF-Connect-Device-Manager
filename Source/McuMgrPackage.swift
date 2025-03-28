@@ -51,11 +51,14 @@ public struct McuMgrPackage {
     
     public func image(forResource resource: FirmwareUpgradeResource) -> ImageManager.Image? {
         switch resource {
-        case .file(let name):
-            return resources?.first(where: {
-                ($0.name?.caseInsensitiveCompare(name)) == .orderedSame
-            })
+        case .file:
+            if let name = resource.filename {
+                return resources?.first(where: {
+                    ($0.name?.caseInsensitiveCompare(name)) == .orderedSame
+                })
+            }
         }
+        return nil
     }
     
     public func sizeString() -> String {
@@ -223,7 +226,7 @@ fileprivate extension McuMgrPackage {
                     throw McuMgrPackage.Error.manifestImageNotFound
                 }
                 let imageData = try Data(contentsOf: imageURL)
-                let imageHash = try McuMgrImage(data: imageData).hash
+                let imageHash = try McuMgrImage(data: imageData).imageHash
                 return ImageManager.Image(manifestFile, hash: imageHash, data: imageData)
             }
             envelope = nil
@@ -247,7 +250,7 @@ fileprivate extension ImageManager.Image {
      */
     init(fromBinFile url: URL) throws {
         let binData = try Data(contentsOf: url)
-        let binHash = try? McuMgrImage(data: binData).hash
+        let binHash = try? McuMgrImage(data: binData).imageHash
         self.init(image: 0, content: .bin, hash: binHash ?? Data(), data: binData)
     }
 

@@ -804,7 +804,9 @@ public final class McuMgrPollResponse: McuMgrResponse {
         guard let resourceID else { return nil }
         if resourceID.hasPrefix("file://") {
             let filename = String(resourceID.suffix(from: "file://".endIndex))
-            return .file(name: filename)
+            var resource = FirmwareUpgradeResource.file
+            resource.filename = filename
+            return resource
         }
         return nil
     }

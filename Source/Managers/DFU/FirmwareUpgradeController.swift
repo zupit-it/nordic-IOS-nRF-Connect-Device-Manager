@@ -30,11 +30,12 @@ import Foundation
     /**
      Firmware upgrades on SUIT (Software Update for the Internet of Things) devices might request a ``FirmwareUpgradeResource`` to continue via callback. When that happens, this API allows you to provide said resource.
      */
-     @objc func uploadResource(_ resource: FirmwareUpgradeResource, data: Data) -> Void
+    @objc func uploadResource(_ resource: FirmwareUpgradeResource, data: Data) -> Void
 }
 
 // MARK: FirmwareUpgradeResource
 
+/*
 public enum FirmwareUpgradeResource: CustomStringConvertible {
     case file(name: String)
     
@@ -53,6 +54,47 @@ public enum FirmwareUpgradeResource: CustomStringConvertible {
         switch self {
         case .file(let name):
             return "file://\(name)"
+        }
+    }
+}
+*/
+
+// Waring: Converted by Copilot !
+
+@objc public enum FirmwareUpgradeResource: Int, CustomStringConvertible {
+    case file
+    
+    private static var filenames: [FirmwareUpgradeResource: String] = [:]
+    
+    public var filename: String? {
+        get {
+            return FirmwareUpgradeResource.filenames[self]
+        }
+        set {
+            FirmwareUpgradeResource.filenames[self] = newValue
+        }
+    }
+    
+    // MARK: Init
+    
+    public init?(resourceID: String) {
+        guard let filename = resourceID.components(separatedBy: "//").last else {
+            return nil
+        }
+        self = .file
+        self.filename = filename
+    }
+    
+    // MARK: CustomStringConvertible
+    
+    public var description: String {
+        switch self {
+        case .file:
+            if let name = self.filename {
+                return "file://\(name)"
+            } else {
+                return "file://unknown"
+            }
         }
     }
 }

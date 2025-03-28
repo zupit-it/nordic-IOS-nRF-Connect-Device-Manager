@@ -29,8 +29,7 @@ public class ImageManager: McuManager {
             - slot: All of the previous code / modes target `slot` 1 (Secondary) as where they want the image uploaded, so that's the default. Only DirectXIP would target `slot` 0 (Primary) for upload.
             - content: This is a necessary aid for complex SUIT updates involving `suitCache` resources. It defaults to `.unknown` so as to not alter the behavior of unrelated DFU operations. It can be set to other, more descriptive values, but improper use might cause erratic upload behavior.
          */
-        public init(image: Int, slot: Int = 1, content: McuMgrManifest.File.ContentType = .unknown,
-                    hash: Data, data: Data) {
+        public init(image: Int, slot: Int = 1, content: McuMgrManifest.File.ContentType = .unknown, hash: Data, data: Data) {
             self.name = nil
             self.image = image
             self.slot = slot

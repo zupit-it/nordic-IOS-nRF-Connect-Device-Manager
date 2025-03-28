@@ -516,7 +516,6 @@ public class SuitManager: McuManager {
             }
             
             guard let resourceID = response.resourceID,
-                  let resource = FirmwareUpgradeResource(resourceID),
                   let sessionID = response.sessionID else {
                 guard self.pollAttempts < Self.MAX_POLL_ATTEMPTS else {
                     self.declareSuccess()
@@ -531,6 +530,9 @@ public class SuitManager: McuManager {
                 }
                 return
             }
+            
+            var resource = FirmwareUpgradeResource.file
+            resource.filename = String(resourceID.suffix(from: "file://".endIndex))
             
             self.sessionID = sessionID
             guard self.uploadDelegate != nil else {
